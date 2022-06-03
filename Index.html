@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <header style="text-align: center; padding: 10px">
+      <h1>Test Arfus</h1>
+    </header>
+    <section  id="Problema5" style="text-align: center;">
+      <div><h2>Problema 5 Verificar Password</h2></div>
+      <label class="label" for="password">Ingrese Password</label>
+      <input
+        class="input"
+        type="text"
+        id="password"
+        name="password"
+        onchange="verificaPass(value)"
+      />
+      <label class="label"
+        >Presione enter despues de ingresar su password</label
+      >
+      <br />
+      <div style="display:flex; flex:wrap; align-content:center; justify-content: center;">
+            <div
+                style="text-align: center; color: green; max-width: 300px"
+                id="ingresoCorrecto"
+            ></div>
+            <div
+                style="text-align: center; color: red; max-width: 300px"
+                id="ingresoInCorrecto"
+            ></div>
+    </div>
+    </section>
+    <section id="Problema6"  style="text-align: center;">
+        <div><h2>Problema 6 Buscar Pokenmon por Id o por Nombre</h2></div>
+        <label class="label" for="password">Ingrese Id o Nombre de Pokenmon</label>
+        <input
+          class="input"
+          type="text"
+          id="idPokemon"
+          name="namePokemon"
+          onchange="mostrarPokemon(value)"
+        />
+        <label class="label"
+          >Presione enter despues de ingresar su elección</label>
+        <div><h3>Datos del Pokemon</h3></div>
+        <div id="datosPokemon" style="display: flex; flex:wrap;  justify-content:center;">
+            <div id="textoPokemon" style="flex-grow : 2"></div>
+            <div id="imgPokemon" style="flex-grow : 2">
+                
+            </div>
+        </div>
+
+    </section>
+
+  </body>
+
+  <script>
+
+//Problema 1 Multiplicacion de dos numeros sin usar operador *
+
+ const multiplicar = ( a, b ) => {
+     let resultado = 0
+     while(b>0){
+         resultado +=a;
+         b--;
+     }
+     return resultado;
+ }
+ console.log("Problema 1 multiplcar sin * 2 y 6 = ", multiplicar(2,6));
+
+// Problema 2
+
+      function pokemonByTypes(id){
+                fetch("https://pokeapi.co/api/v2/type/" + id )
+                    .then((response) => response.json())
+                    .then((data) => {
+                    console.log(
+                        "Problema 2 - item 1: Para tipo ",
+                       id,
+                        "hay ",
+                        data.pokemon.length,
+                        "contados"
+                    );
+                });
+    }
+    pokemonByTypes(1);
+
+    function segun2Tipos(a, b) {
+      let names = [];
+      fetch("https://pokeapi.co/api/v2/type/" + a)
+        .then((response) => response.json())
+        .then((data) => {
+          data.pokemon.map((item) => {
+            names.push(item.pokemon.name);
+          });
+        });
+
+      fetch("https://pokeapi.co/api/v2/type/" + b)
+        .then((response) => response.json())
+        .then((data) => {
+          data.pokemon.map((item) => {
+            names.push(item.pokemon.name);
+          });
+        });
+      console.log("Problema 2 - item 2: pokenmon tipos ", a, " y ", b ," nombres ", names);
+      return names;
+    }
+
+    segun2Tipos(1, 3);
+
+    function pokemonByName(name) {
+      return new Promise((resolve) => {
+        fetch("https://pokeapi.co/api/v2/pokemon/" + name)
+          .then((response) => response.json())
+          .then((data) => {
+            resolve(data.id);
+          });
+      });
+    }
+
+    pokemonByName("ditto").then((response) =>
+      console.log("Problema 2 - item 3: Id Pokemon:", response)
+    );
+
+    function pokemonById(id) {
+      return new Promise((resolve) => {
+        fetch("https://pokeapi.co/api/v2/pokemon/" + id)
+          .then((response) => response.json())
+          .then((data) => {
+            resolve(data.stats);
+          });
+      });
+    }
+
+    pokemonById(31).then((response) => 
+        console.log("Problema 2 - item 4: Pokemon Stats:", response));
+
+
+    function pokemonByIds(ids) {
+      let pokemons = [];
+      return new Promise((resolve) => {
+        ids.map((item) => {
+          fetch("https://pokeapi.co/api/v2/pokemon/" + item)
+            .then((response) => response.json())
+            .then((data) => {
+              let pokemon = {
+                name: data.name,
+                type: data.types[0].type.url.substring(
+                  31,
+                  data.types[0].type.url.length - 1
+                ),
+                weight: data.weight,
+              };
+              pokemons.push(pokemon);
+            });
+        });
+        resolve(pokemons);
+      });
+    }
+
+    function pokemonByIdsOrder(ids, order) {
+      return new Promise((resolve) => {
+        let result = "";
+        pokemonByIds(ids).then((pokemons) => {
+          switch (order) {
+            case "type":
+              result = pokemons.sort((a, b) => a.type - b.type);
+              break;
+            case "name":
+              result = pokemons.sort((a, b) => b.name - a.name);
+              break;
+            case "weight":
+              result = pokemons.sort((a, b) => b.weight - a.weight);
+              break;
+          }
+          resolve(result);
+        });
+      });
+    }
+
+    const ids = [1, 3, 5];
+    pokemonByIdsOrder(ids, "weight").then((response) =>
+      console.log("Problema 2 - item 5: Pokemons:", response)
+    );
+
+
+    function verificaPokemon(id, type) {
+      return new Promise((resolve) => {
+        fetch("https://pokeapi.co/api/v2/pokemon/" + id)
+          .then((response) => response.json())
+          .then((data) => {
+            parseInt(
+              data.types[0].type.url.substring(
+                31,
+                data.types[0].type.url.length - 1
+              )
+            ) === type
+              ? resolve(true)
+              : resolve(false);
+          });
+      });
+    }
+
+    verificaPokemon(1, 10).then((response) =>
+      response ? console.log("Problema 2 - item 6: Es Verdadero") : console.log("Problema 2 - item 6: es Falso")
+    );
+
+    ////Problema 3 y 5 Verificacion Password Strong e Ingreso de Password por Html
+
+    function verificaPass(entrada) {
+      
+    const password = entrada.split('')
+      let caracter = "";
+      let contnumeros= 0;
+      let tienesimbolos = 0
+      //condiciones de password
+      let largo = 1;
+      let tieneminusculas = 1;
+      let tienemayusculas = 1;
+      let tieneceros = 0;
+      let repiteCaracter = 0;
+      let tiene2simbolos = 1;
+      let repiteCE = 0;
+      let tiene4num = 1;
+      let tieneespacio = 0;
+
+      //Array datos permitidos
+      let numeros =["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+      let minusculas = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","ñ","o","p","q","r","s","t","u","v","w","x","y","z"];
+      let mayusculas =  ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N","Ñ","O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+      let simbolos = ["!","@","#","$","%","ˆ","&","*","-","_","+","=","?"]
+
+      password.map(pass => {
+        //repite caracrter
+        if(pass == caracter){
+            repiteCaracter++
+            }
+            caracter=pass;    
+        //verifica numeros y si ingreso 0
+        if(!isNaN(pass))
+            {      
+                if(pass == 0){
+                    tieneceros = 1;
+                }
+                contnumeros++;
+            }
+        //verifica minusculas
+        if(tieneminusculas==1) if(minusculas.includes(pass)) tieneminusculas = 0;
+        // Verifica mayusculas
+        if(tienemayusculas==1) if(mayusculas.includes(pass)) tienemayusculas = 0;
+        // Verifica simbolos
+        
+           if(simbolos.includes(pass)){
+                tienesimbolos ++;
+                let countsimbolos = password.filter(item => item == pass);
+                countsimbolos.length > 1 ? repiteCE=1 : "";
+
+            };
+        
+        
+        if(pass == ' ') tieneespacio = 1;
+
+      })
+
+      //Verifica cantidad caracteres
+        if(password.length > 15) largo = 0;
+        if(contnumeros >3) tiene4num = 0;
+        if(tienesimbolos>1) tiene2simbolos= 0;
+
+      let rojo = [];
+      let verde = [];
+
+      tieneminusculas != 0 
+      ? rojo.push("Debe contener al menos una minuscula")
+      : verde.push("Debe contener al menos una minuscula");
+
+      tienemayusculas != 0
+      ? rojo.push("Debe contener al menos una mayuscula")
+      : verde.push("Debe contener al menos una mayuscula");
+
+      tiene2simbolos != 0
+      ? rojo.push("Debe contener al menos 2 caracteres especiales")
+        : verde.push("Debe contener al menos 2 caracteres especiales");
+      
+    tieneceros != 0
+    ? rojo.push("No debe contiene 0")
+    : verde.push("No debe contiene 0");
+
+    repiteCaracter != 0
+    ? rojo.push("No debe contener dos numeros o letras o carecteres especiales iguales consecutivos")
+    : verde.push("No debe contener dos numeros o letras o carecteres especiales iguales consecutivos");
+
+    repiteCE != 0
+    ? rojo.push("No debe repetir caracteres especiales")
+    : verde.push("No debe repetir caracteres especiales");
+
+    largo != 0
+    ? rojo.push("Debe ingresar por lo menos 16 caracteres")
+    : verde.push("Debe ingresar por lo menos 16 caracteres");
+
+    tiene4num != 0
+    ? rojo.push("Debe contener al menos 4 numeros")
+    : verde.push("Debe contener al menos 4 numeros");
+
+    tieneespacio != 0
+    ? rojo.push("No debe contener espacio en blanco")
+    : verde.push("No debe contener espacio en blanco");
+
+      if( (largo +
+        tieneminusculas +
+       tienemayusculas +
+       tiene2simbolos +
+       tieneceros +
+       repiteCaracter +
+       repiteCE +
+       tiene4num + 
+       tieneespacio ) == 0
+      )console.log("Problema 3 y 5 - Password Valido ", entrada)
+      else console.log("Problema 3 y 5 - Password Invalido" , entrada)
+      //manejo de Html para informar casos correctos o incorrectos
+
+      let ingresoCorrecto = document.getElementById("ingresoCorrecto");
+      let ingresoInCorrecto = document.getElementById("ingresoInCorrecto");
+     
+      //Limpio mensajes anteriores de verificacion de password
+    if(ingresoCorrecto !== null){
+        while (ingresoCorrecto.hasChildNodes()){
+            ingresoCorrecto.removeChild(ingresoCorrecto.lastChild);
+        }
+    }
+    if(ingresoInCorrecto !== null){
+        while (ingresoInCorrecto.hasChildNodes()){
+            ingresoInCorrecto.removeChild(ingresoInCorrecto.lastChild);
+        }
+    }
+
+      verde.map((item, index) => {
+        let pv = document.createElement("p");
+        txt = document.createTextNode(item);
+        pv.appendChild(txt);
+        ingresoCorrecto.appendChild(pv);
+      });
+      rojo.map((item, index) => {
+        let pv = document.createElement("p");
+        txt = document.createTextNode(item);
+        pv.appendChild(txt);
+        ingresoInCorrecto.appendChild(pv);
+
+    });
+}
+
+//VerificaPass("Algo+2 345/e/f891709");
+
+//Problema 4
+    function arregloNumeros(arregloNum){ 
+   
+        let pares = 0;
+        let impares = 0;
+        let numMenor = 0;
+        let numMayor = 0;
+        let numMayor1000 = 0;
+        let porcentajeNumMenor = 0;
+        let porcentajeNumMayor = 0;
+        let numero = 0;
+        let suma=0;
+
+        let nuevo = arregloNum.map(item => {
+            item % 2 ? impares++ : pares ++;
+            item >1000 && numMayor1000++;
+            suma+=item;
+            return item
+        }).sort((a,b)=> a -b)
+        numMenor=nuevo[0];
+        numMayor=nuevo[nuevo.length-1];
+
+        
+        // Cantidad de elementos del arreglo.
+        let cantElementos = arregloNum.length;
+        // Porcentaje de números pares e impares.
+        console.log("Problema 4 - pares", pares)
+        console.log("Problema 4 - impares", impares)
+        console.log("Problema 4 - numMayor1000", numMayor1000)
+        console.log("Problema 4 - cantElementos", cantElementos)
+        pares > 0 ?
+        console.log("Problema 4 - Porcentaje Pares: ", pares*100/cantElementos): 
+        console.log(("Problema 4 - No hay numeros Pares"));;
+        impares > 0 ?
+        console.log("Problema 4 - Porcentaje Impares: ", impares*100/cantElementos): 
+        console.log(("Problema 4 - No hay numeros Impares"));;
+         // Porcentaje de números mayores a 1000.
+         numMayor1000 > 0 ?
+         console.log("Problema 4 - Porcentaje Numeros Mayores a 1000: ", numMayor1000*100/cantElementos):
+         console.log(("Problema 4 - No hay mayores a 1000"));
+         // Cuál es el mayor y menor valor.
+         console.log("Problema 4 - Numero menor: ", numMenor)
+         console.log("Problema 4 - Numero Mayor: ", numMayor)
+         // Asuma los siguientes indicadores: 
+    // Tome en cuenta que el mayor número representa el 100%,
+    // indique cual es el porcentaje del número mínimo y el porcentaje del promedio de todos los números.
+        
+        console.log('Problema 4 - Porcentaje del menor en relacion al mayor: ', numMenor*100/numMayor)
+        console.log('Problema 4 - Porcentaje del promedio en relacion al mayor: ', (suma/cantElementos)*100/numMayor)
+
+    }
+    const arreglo = [2000,2,5,1002,98,100,7,9,15,8]
+    arregloNumeros(arreglo);
+
+    /// Problema 6
+    function buscarPokemon(dato){
+      return new Promise((resolve) => {
+        if(isNaN(dato)){
+        fetch("https://pokeapi.co/api/v2/pokemon/" + dato)
+          .then((response) => response.json())
+          .then((data) => {
+            let pokemon = {"Nombre": data.name, 
+                           "Numero": data.id, 
+                            "Tipo": data.types[0].type.url.substring(31,data.types[0].type.url.length - 1),
+                            "Peso": data.weight,
+                            "Altura": data.height,
+                            "img": data.sprites["front_default"]
+                        }
+            resolve(pokemon);
+          });
+      
+    }else{
+        fetch("https://pokeapi.co/api/v2/pokemon/" + dato)
+          .then((response) => response.json())
+          .then((data) => {
+            let pokemon = {"Nombre": data.name, 
+                           "Numero": data.id, 
+                            "Tipo": data.types[0].type.url.substring(31,data.types[0].type.url.length - 1),
+                            "Peso": data.weight,
+                            "Altura": data.height,
+                            "img": data.sprites["front_default"]
+                        }
+            resolve(pokemon);
+          });
+    }
+    });
+    }
+
+    function mostrarPokemon(dato){
+        buscarPokemon(dato).then((response) => {
+            console.log("Problema 6 - Datos de Pokemon a mostrar", response)
+            let textoPokemon = document.getElementById("textoPokemon");
+            let imgPokemon = document.getElementById("imgPokemon");
+            if(textoPokemon !== null){
+            while (textoPokemon.hasChildNodes()){
+                textoPokemon.removeChild(textoPokemon.lastChild);
+                }
+            }
+            if(imgPokemon !== null){
+            while (imgPokemon.hasChildNodes()){
+                imgPokemon.removeChild(imgPokemon.lastChild);
+                }
+            }
+
+            let p = document.createElement("p");
+            let img = document.createElement("img");
+            
+            for(const prop in response) {
+                if (prop != "img"){
+                let pv = document.createElement("p");
+                let txt = document.createTextNode(`${prop}: ${response[prop]}`);
+                pv.appendChild(txt);
+                textoPokemon.appendChild(pv);
+                }
+            };
+        
+            img.setAttribute("src", response.img);
+            img.setAttribute("height", "200");
+            img.setAttribute("width", "200");
+            img.setAttribute("alt", "Pokemon");
+            imgPokemon.appendChild(img);
+        });
+    }
+
+  </script>
+</html>
